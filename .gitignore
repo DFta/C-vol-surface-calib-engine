@@ -1,32 +1,43 @@
-# Prerequisites
-*.d
+# Build + deps
+/build/
+/build-*/
+/cmake-build-*/
+/CMakeFiles/
+/CMakeCache.txt
+/build.ninja
+/compile_commands.json
+/Testing/
+/_deps/
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
+# Objects / libs / bins
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
+*.o
 *.a
 *.lib
-
-# Executables
+*.dll
+*.so
+*.dylib
 *.exe
-*.out
-*.app
+*.pdb
+*.ilk
+*.pyd
+*.dll.lib
+
+# Python
+/.venv/
+/env/
+/venv/
+__pycache__/
+/*.egg-info
+*.pyc
+*.pyo
+*.pyd
+/.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
