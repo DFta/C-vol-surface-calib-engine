@@ -1,0 +1,14 @@
+#pragma once
+#include <cstdint>
+#include <functional>
+#include <vector>
+
+
+namespace vol::mc {
+struct MCResult { double price; double stderr; std::uint64_t paths; };
+
+
+// Antithetic + control variate (analytic Black-Scholes as control)
+MCResult european_vanilla_gbm(double S,double K,double r,double q,double T,double vol,bool is_call,
+std::uint64_t n_paths, std::uint64_t seed=42);
+}
