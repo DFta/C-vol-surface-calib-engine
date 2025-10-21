@@ -1,0 +1,54 @@
+cmake_minimum_required(VERSION 3.20)
+project(libvol LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+include(FetchContent)
+
+# Dependencies
+FetchContent_Declare(pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+    GIT_TAG v2.12.0)
+FetchContent_Declare(catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG v3.5.4)
+FetchContent_Declare(benchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG v1.8.4)
+set(BENCHMARK_ENABLE_TESTING Off CACHE BOOL "" FORCE)
+
+# Google Benchmark config (avoid -Werror on MinGW)
+set(BENCHMARK_ENABLE_WERROR  Off CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(pybind11 catch2 benchmark)
+
+# Library
+add_library(vol STATIC
+    src/models/black_scholes.cpp
+    src/models/implied_vol.cpp
+    src/models/gbm.cpp)
+target_include_directories(vol PUBLIC include)
+
+if (MSVC)
+    target_compile_options(vol PRIVATE /W4 /permissive-)
+else()
+    target_compile_options(vol PRIVATE -Wall -Wextra -Wpedantic -Werror=return-type)
+endif()
+
+# Python bindings
+pybind11_add_module(volpy bindings/python_bindings.cpp)
+target_link_libraries(volpy PRIVATE vol)
+
+# Tests
+enable_testing()
+add_executable(vol_tests
+    tests/test_black_scholes.cpp
+    tests/test_implied_vol.cpp)
+target_link_libraries(vol_tests PRIVATE vol Catch2::Catch2WithMain)
+add_test(NAME vol_tests COMMAND vol_tests)
+
+# Benchmarks
+add_executable(vol_bench bench/bench_black_scholes.cpp)
+target_link_libraries(vol_bench PRIVATE vol benchmark::benchmark)

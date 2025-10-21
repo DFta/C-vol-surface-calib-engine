@@ -35,7 +35,7 @@ m.def("implied_vol", &vol::bs::implied_vol, "Robust implied vol");
 
 py::class_<vol::mc::MCResult>(m, "MCResult")
 .def_readonly("price", &vol::mc::MCResult::price)
-.def_readonly("stderr", &vol::mc::MCResult::stderr)
+.def_readonly("stderr", &vol::mc::MCResult::std_err)
 .def_readonly("paths", &vol::mc::MCResult::paths);
 
 

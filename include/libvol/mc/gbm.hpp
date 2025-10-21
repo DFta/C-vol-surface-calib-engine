@@ -5,7 +5,10 @@
 
 
 namespace vol::mc {
-struct MCResult { double price; double stderr; std::uint64_t paths; };
+struct MCResult { 
+    double price; 
+    double std_err; 
+    std::uint64_t paths; };
 
 
 // Antithetic + control variate (analytic Black-Scholes as control)

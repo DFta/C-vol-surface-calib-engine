@@ -1,0 +1,22 @@
+Start testing: Oct 21 17:56 Eastern Daylight Time
+----------------------------------------------------------
+1/1 Testing: vol_tests
+1/1 Test: vol_tests
+Command: "C:/Users/raphe/Documents/GitHub/C-vol-surface-calib-engine/build/vol_tests.exe"
+Directory: C:/Users/raphe/Documents/GitHub/C-vol-surface-calib-engine/build
+"vol_tests" start time: Oct 21 17:56 Eastern Daylight Time
+Output:
+----------------------------------------------------------
+Randomness seeded to: 3505458961
+===============================================================================
+All tests passed (5 assertions in 3 test cases)
+
+<end of output>
+Test time =   0.20 sec
+----------------------------------------------------------
+Test Passed.
+"vol_tests" end time: Oct 21 17:56 Eastern Daylight Time
+"vol_tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 21 17:56 Eastern Daylight Time

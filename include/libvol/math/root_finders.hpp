@@ -2,6 +2,7 @@
 #include <functional>
 #include <stdexcept>
 #include <cmath>
+#include <limits>
 
 
 namespace vol::root {
