@@ -1,7 +1,0 @@
-libdir=C:/Program Files (x86)/libvol/lib
-
-Name: benchmark
-Description: Google microbenchmark framework (with main() function)
-Version: v1.8.4
-Requires: benchmark
-Libs: -L${libdir} -lbenchmark_main

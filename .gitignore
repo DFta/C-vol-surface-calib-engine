@@ -41,3 +41,12 @@ __pycache__/
 
 # Logs
 *.log
+
+# Extra CMake/Ninja trash
+CMakeConfigureLog.yaml
+CTestTestfile.cmake
+cmake_install.cmake
+build.ninja
+.ninja_log
+.ninja_deps
+LastTest.log
