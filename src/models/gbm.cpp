@@ -4,6 +4,7 @@
 #include <random>
 #include <cmath>
 #include <vector>
+#include <cstddef>
 #include <algorithm> // for std::max
 
 namespace vol::mc {

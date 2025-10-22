@@ -3,6 +3,7 @@ project(libvol LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(FetchContent)
@@ -22,6 +23,12 @@ set(BENCHMARK_ENABLE_TESTING Off CACHE BOOL "" FORCE)
 # Google Benchmark config (avoid -Werror on MinGW)
 set(BENCHMARK_ENABLE_WERROR  Off CACHE BOOL "" FORCE)
 
+# If caller passes -DPYTHON_EXECUTABLE=... use it for pybind11
+if(DEFINED PYTHON_EXECUTABLE)
+    set(PYBIND11_PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}" CACHE FILEPATH "" FORCE)
+endif()
+
+
 FetchContent_MakeAvailable(pybind11 catch2 benchmark)
 
 # Library
@@ -30,6 +37,17 @@ add_library(vol STATIC
     src/models/implied_vol.cpp
     src/models/gbm.cpp)
 target_include_directories(vol PUBLIC include)
+
+# Require C++20 at target level (good with IDEs)
+target_compile_features(vol PUBLIC cxx_std_20)
+
+if (MSVC)
+    target_compile_options(vol PRIVATE /W4 /permissive- /EHsc /bigobj)
+    target_compile_definitions(vol PRIVATE NOMINMAX _CRT_SECURE_NO_WARNINGS)
+else()
+    target_compile_options(vol PRIVATE -Wall -Wextra -Wpedantic -Werror=return-type)
+endif()
+
 
 if (MSVC)
     target_compile_options(vol PRIVATE /W4 /permissive-)

@@ -2,6 +2,7 @@
 #include <cmath>
 #include <utility>
 #include <vector>
+#include <cstddef>
 
 namespace vol::stats {
 inline std::pair<double,double> mean_var(const std::vector<double>& x){
@@ -11,7 +12,9 @@ inline std::pair<double,double> mean_var(const std::vector<double>& x){
     for (double v : x) { ++k; double d = v - m; m += d / k; m2 += d * (v - m); }
     return { m, (n > 1 ? m2/(n-1) : 0.0) };
 }
-inline double stderr(const std::vector<double>& x){
-    auto [m,v] = mean_var(x); (void)m; return x.empty() ? 0.0 : std::sqrt(v/x.size());
+inline double std_err(const std::vector<double>& x){  // was: stderr
+    auto mv = mean_var(x);
+    const double v = mv.second;
+    return x.empty() ? 0.0 : std::sqrt(v/x.size());
 }
 } // namespace vol::stats
