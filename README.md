@@ -15,7 +15,7 @@
 - RND extraction (Breeden–Litzenberger) + diagnostics
 
 **Performance**
--------------------------------------------------------------------
+```
 Benchmark                         Time             CPU   Iterations
 -------------------------------------------------------------------
 BM_Price_ATM                   41.2 ns         41.9 ns     17920000
@@ -24,3 +24,4 @@ BM_PriceGreeks_ATM              121 ns          120 ns      6400000
 BM_Price_MultipleStrikes        423 ns          417 ns      1947826
 BM_Price_ShortDated            42.4 ns         42.0 ns     16000000
 BM_Price_Put                   44.9 ns         43.0 ns     16000000
+```
