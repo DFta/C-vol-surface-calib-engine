@@ -2,20 +2,41 @@
 
 Notebooks don't work, working on fix
 
-**MVP targets**
-- BS price within 1e-8 vs closed form (tests included)
-- Greeks within 1e-5 vs finite difference (tests included)
-- IV solver robust: Newton with Brent fallback
-- MC with antithetic + placeholder control variate, CI reported
-- Python bindings: `pip install .` (wheel later), `import volpy`
+Black-Scholes pricing with 1e-8 precision
+Binomial pricing for American + Euro options
+Implied volume engine
+Python wrappers (used to be able to use them in the notebooks, maybe you can get them to work. Idk what caused it exactly but as mentioned i'm working on a fix)
 
+## Building from Source
 
-**Next sprints**
-- SVI raw/JW with no‑arb checks + single‑expiry fit
-- Heston CF pricing (Gauss–Laguerre), then calibration
-- Calibration framework (global + local), parameter bounds/penalties
-- RND extraction (Breeden–Litzenberger) + diagnostics
+### Prerequisites
 
+#### Required
+- **C++ Compiler** with C++20 support:
+  - GCC 11+ (Linux)
+  - Clang 13+ (macOS/Linux)
+  - MSVC 2019+ (Windows)
+- **CMake** 3.20 or higher
+- **Git**
+
+#### Optional (for Python bindings)
+- **Python** 3.8 or higher
+- **pip** (Python package manager)
+
+### Quick Start
+```bash
+git clone https://github.com/DFta/libvol.git
+cd libvol
+
+# Build (Release mode for best performance)
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+
+# Run tests (optional but recommended)
+./build/vol_tests
+
+# Run benchmarks (see Benchmarks.md)
+```
 ## Performance
 **Black-Scholes Performance**
 ```
