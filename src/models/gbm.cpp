@@ -24,7 +24,7 @@ MCResult european_vanilla_gbm(double S,double K,double r,double q,double T,doubl
 
     const std::uint64_t pairs = n_paths/2;
 
-    // We’ll collect Y and X to compute beta, then form the controlled samples
+    // Collect Y and X to compute beta, then form the controlled samples
     std::vector<double> Y;     Y.reserve(pairs);
     std::vector<double> X;     X.reserve(pairs);
 

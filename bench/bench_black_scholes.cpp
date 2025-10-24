@@ -1,7 +1,7 @@
 #include <benchmark/benchmark.h>
 #include "libvol/models/black_scholes.hpp"
 
-// Benchmark single price calculation (typical ATM option)
+// Benchmark single price calculation (typical ATM call)
 static void BM_Price_ATM(benchmark::State& state) {
     for (auto _ : state) {
         double result = vol::bs::price(100.0, 100.0, 0.05, 0.02, 1.0, 0.25, true);
@@ -10,7 +10,7 @@ static void BM_Price_ATM(benchmark::State& state) {
 }
 BENCHMARK(BM_Price_ATM);
 
-// Benchmark single price calculation (OTM option)
+// Benchmark single price calculation (OTM call)
 static void BM_Price_OTM(benchmark::State& state) {
     for (auto _ : state) {
         double result = vol::bs::price(100.0, 110.0, 0.05, 0.02, 1.0, 0.25, true);

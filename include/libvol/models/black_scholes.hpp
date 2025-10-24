@@ -3,6 +3,7 @@
 
 
 namespace vol::bs {
+
 struct PriceGreeks { double price, delta, gamma, vega, theta, rho; };
 
 
@@ -20,4 +21,4 @@ PriceGreeks price_greeks(double S,double K,double r,double q,double T,double vol
 struct IVResult { double iv; int newton_iters; int brent_iters; bool converged; };
 IVResult implied_vol(double S,double K,double r,double q,double T,double price,bool is_call,
 double init=0.2, double tol=1e-10);
-}
+} // namespace vol::bs

@@ -8,16 +8,18 @@ namespace vol::bs {
 double phi(double x){ return std::exp(-0.5*x*x) * vol::INV_SQRT2PI; }
 double Phi(double x){ return 0.5 * std::erfc(-x/std::sqrt(2.0)); }
 
-static inline double d1(double S,double K,double r,double q,double T,double v, double sqT){
-    return (std::log(S/K) + (r - q + 0.5*v*v)*T)/(v*sqT);
+static inline double d1(double S,double K,double r,double q,double T,double vol, double sqT){
+    return (std::log(S/K) + (r - q + 0.5*vol*vol)*T)/(vol*sqT);
 }
-static inline double d2(double d1,double v,double T,double sqT){ return d1 - v*sqT; }
+static inline double d2(double d1,double T,double vol,double sqT){ 
+    return d1 - vol*sqT; 
+}
 
 static inline double forward(double S,double r,double q,double T){
     return S*std::exp((r-q)*T);
 }
 
-double price(double S,double K,double r,double q,double T,double v,bool is_call){
+double price(double S,double K,double r,double q,double T,double vol,bool is_call){
     if (T <= 0) {
         double intrinsic = is_call ? std::max(0.0, S-K) : std::max(0.0, K-S);
         return intrinsic;
@@ -25,8 +27,8 @@ double price(double S,double K,double r,double q,double T,double v,bool is_call)
     const double sqT  = std::sqrt(T);
     const double F    = forward(S,r,q,T);
     const double disc = std::exp(-r*T);
-    const double d_1  = d1(S,K,r,q,T,v,sqT);
-    const double d_2  = d2(d_1,v,T,sqT);
+    const double d_1  = d1(S,K,r,q,T,vol,sqT);
+    const double d_2  = d2(d_1,T,vol,sqT);
     if (is_call) return disc*(F*Phi(d_1) - K*Phi(d_2));
     return          disc*(K*Phi(-d_2) - F*Phi(-d_1));
 }

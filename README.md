@@ -15,6 +15,8 @@
 - RND extraction (Breeden–Litzenberger) + diagnostics
 
 **Performance**
+
+## Black-Scholes Performance
 ```
 Benchmark                         Time             CPU   Iterations
 -------------------------------------------------------------------
@@ -25,3 +27,18 @@ BM_Price_MultipleStrikes        423 ns          417 ns      1947826
 BM_Price_ShortDated            42.4 ns         42.0 ns     16000000
 BM_Price_Put                   44.9 ns         43.0 ns     16000000
 ```
+
+### Binomial Tree Performance
+```
+| Steps | Single Price | Greeks | Use Case |
+|-------|--------------|--------|----------|
+| 50 | 1.4 μs | 13 μs | Real-time pricing |
+| 100 | ~5 μs | ~45 μs | Standard accuracy |
+| 256 | 33 μs | 302 μs | High accuracy (<1¢ error) |
+| 512 | 133 μs | 1.2 ms | Research/validation |
+```
+
+**Convergence to Black-Scholes:**
+- 50 steps: 0.048 error
+- 256 steps: 0.009 error (sub-penny accuracy)
+- 1024 steps: 0.002 error

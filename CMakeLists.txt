@@ -7,6 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(FetchContent)
+find_package(Threads REQUIRED)
 
 # Dependencies
 FetchContent_Declare(pybind11
@@ -35,7 +36,8 @@ FetchContent_MakeAvailable(pybind11 catch2 benchmark)
 add_library(vol STATIC
     src/models/black_scholes.cpp
     src/models/implied_vol.cpp
-    src/models/gbm.cpp)
+    src/models/gbm.cpp
+    src/models/binom.cpp)
 target_include_directories(vol PUBLIC include)
 
 # Require C++20 at target level (good with IDEs)
@@ -48,13 +50,6 @@ else()
     target_compile_options(vol PRIVATE -Wall -Wextra -Wpedantic -Werror=return-type)
 endif()
 
-
-if (MSVC)
-    target_compile_options(vol PRIVATE /W4 /permissive-)
-else()
-    target_compile_options(vol PRIVATE -Wall -Wextra -Wpedantic -Werror=return-type)
-endif()
-
 # Python bindings
 pybind11_add_module(volpy bindings/python_bindings.cpp)
 target_link_libraries(volpy PRIVATE vol)
@@ -63,10 +58,15 @@ target_link_libraries(volpy PRIVATE vol)
 enable_testing()
 add_executable(vol_tests
     tests/test_black_scholes.cpp
-    tests/test_implied_vol.cpp)
+    tests/test_implied_vol.cpp
+    tests/test_binom.cpp
+    )
 target_link_libraries(vol_tests PRIVATE vol Catch2::Catch2WithMain)
 add_test(NAME vol_tests COMMAND vol_tests)
 
 # Benchmarks
 add_executable(vol_bench bench/bench_black_scholes.cpp)
-target_link_libraries(vol_bench PRIVATE vol benchmark::benchmark)
+target_link_libraries(vol_bench PRIVATE vol benchmark::benchmark Threads::Threads)
+add_executable(binom_bench bench/bench_binom.cpp)
+target_link_libraries(binom_bench PRIVATE vol benchmark::benchmark Threads::Threads)
+
