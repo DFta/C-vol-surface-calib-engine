@@ -16,8 +16,7 @@ Notebooks don't work, working on fix
 - Calibration framework (global + local), parameter bounds/penalties
 - RND extraction (Breeden–Litzenberger) + diagnostics
 
-##Performance
-
+## Performance
 **Black-Scholes Performance**
 ```
 Benchmark                         Time             CPU   Iterations
