@@ -37,7 +37,7 @@ BM_Price_Put                   44.9 ns         43.0 ns     16000000
 | 256   | 33 μs        | 302 μs | High accuracy (<1bp error) |
 | 512   | 133 μs       | 1.2 ms | Research/validation        |
 ```
-Complete Benchmark paste in benchmark file
+Complete Benchmark paste in benchmarks file
 
 **Convergence to Black-Scholes:**
 - 50 steps: 0.048 error
