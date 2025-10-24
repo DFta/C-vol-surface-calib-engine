@@ -30,13 +30,14 @@ BM_Price_Put                   44.9 ns         43.0 ns     16000000
 
 ### Binomial Tree Performance
 ```
-| Steps | Single Price | Greeks | Use Case |
-|-------|--------------|--------|----------|
-| 50 | 1.4 μs | 13 μs | Real-time pricing |
-| 100 | ~5 μs | ~45 μs | Standard accuracy |
-| 256 | 33 μs | 302 μs | High accuracy (<1¢ error) |
-| 512 | 133 μs | 1.2 ms | Research/validation |
+| Steps | Single Price | Greeks | Use Case                   |
+|-------|--------------|--------|----------------------------|
+| 50    | 1.4 μs       | 13 μs  | Real-time pricing          |
+| 100   | ~5 μs        | ~45 μs | Standard accuracy          |
+| 256   | 33 μs        | 302 μs | High accuracy (<1bp error) |
+| 512   | 133 μs       | 1.2 ms | Research/validation        |
 ```
+Complete Benchmark paste in benchmark file
 
 **Convergence to Black-Scholes:**
 - 50 steps: 0.048 error
