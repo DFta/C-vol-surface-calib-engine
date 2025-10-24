@@ -2,10 +2,10 @@
 
 Notebooks don't work, working on fix
 
-Black-Scholes pricing with 1e-8 precision
-Binomial pricing for American + Euro options
-Implied volume engine
-Python wrappers (used to be able to use them in the notebooks, maybe you can get them to work. Idk what caused it exactly but as mentioned i'm working on a fix)
+- Black-Scholes pricing with 1e-8 precision
+- Binomial pricing for American + Euro options
+- Implied volume engine
+- Python wrappers (used to be able to use them in the notebooks, maybe you can get them to work. Idk what caused it exactly but as mentioned i'm working on a fix)
 
 ## Building from Source
 
