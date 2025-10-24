@@ -16,9 +16,9 @@ Notebooks don't work, working on fix
 - Calibration framework (global + local), parameter bounds/penalties
 - RND extraction (Breeden–Litzenberger) + diagnostics
 
-**Performance**
+##Performance
 
-## Black-Scholes Performance
+**Black-Scholes Performance**
 ```
 Benchmark                         Time             CPU   Iterations
 -------------------------------------------------------------------
@@ -30,7 +30,7 @@ BM_Price_ShortDated            42.4 ns         42.0 ns     16000000
 BM_Price_Put                   44.9 ns         43.0 ns     16000000
 ```
 
-### Binomial Tree Performance
+**Binomial Tree Performance**
 ```
 | Steps | Single Price | Greeks | Use Case                   |
 |-------|--------------|--------|----------------------------|
