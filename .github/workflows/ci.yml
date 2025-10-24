@@ -2,20 +2,224 @@ name: CI
 
 on:
   push:
+    branches: [ main, develop ]
   pull_request:
+    branches: [ main ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  # Test on multiple platforms
+  build-and-test:
+    name: ${{ matrix.os }} - ${{ matrix.compiler }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false  # Don't cancel other jobs if one fails
+      matrix:
+        os: [ubuntu-22.04, macos-13, windows-2022]
+        compiler: [gcc, clang, msvc]
+        build_type: [Release]
+        
+        exclude:
+          # MSVC only on Windows
+          - os: ubuntu-22.04
+            compiler: msvc
+          - os: macos-13
+            compiler: msvc
+          # GCC not default on macOS
+          - os: macos-13
+            compiler: gcc
+          # Clang not on Windows
+          - os: windows-2022
+            compiler: clang
+            
+        include:
+          # Add Debug build for one platform
+          - os: ubuntu-22.04
+            compiler: gcc
+            build_type: Debug
+            
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Configure
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+          
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake ninja
+          
+      - name: Set up compiler (GCC)
+        if: matrix.compiler == 'gcc' && runner.os == 'Linux'
+        run: |
+          echo "CC=gcc-11" >> $GITHUB_ENV
+          echo "CXX=g++-11" >> $GITHUB_ENV
+          
+      - name: Set up compiler (Clang)
+        if: matrix.compiler == 'clang' && runner.os == 'Linux'
+        run: |
+          echo "CC=clang-14" >> $GITHUB_ENV
+          echo "CXX=clang++-14" >> $GITHUB_ENV
+          
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/_deps
+          key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-
+            
+      - name: Configure CMake
+        run: |
+          cmake -B build -S . \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -G Ninja
+            
       - name: Build
-        run: cmake --build build -j 4
+        run: cmake --build build --parallel
+        
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure --parallel
+        
+      - name: Run benchmarks (smoke test)
+        if: matrix.build_type == 'Release'
+        run: |
+          ./build/vol_bench --benchmark_min_time=0.1 --benchmark_filter="BM_BS_Price_ATM"
+        shell: bash
+        
+      - name: Test Python bindings
+        if: matrix.build_type == 'Release'
+        run: |
+          python -m pip install ./build
+          python -c "import volpy; print('Python bindings OK')"
+          python -c "import volpy; assert abs(volpy.bs_price(100,100,0.05,0,1,0.25,True) - 10.45) < 0.1"
+        shell: bash
 
-      - name: Test
+  # Separate job for code coverage
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build lcov
+          
+      - name: Configure with coverage
+        run: |
+          cmake -B build -S . \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="--coverage -fprofile-arcs -ftest-coverage" \
+            -G Ninja
+            
+      - name: Build
+        run: cmake --build build
+        
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+        
+      - name: Generate coverage report
+        run: |
+          lcov --directory build --capture --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' '*/tests/*' '*/build/_deps/*' --output-file coverage.info
+          lcov --list coverage.info
+          
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.info
+          fail_ci_if_error: false
+
+  # Performance regression check
+  benchmark:
+    name: Benchmark Performance
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Configure
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native"
+        
+      - name: Build
+        run: cmake --build build --parallel
+        
+      - name: Run benchmarks
+        run: |
+          ./build/vol_bench --benchmark_format=json | tee benchmark_result.json
+          
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: C++ Benchmark
+          tool: 'googletest'
+          output-file-path: benchmark_result.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          # Alert if performance degrades
+          alert-threshold: '150%'
+          comment-on-alert: true
+          fail-on-alert: false
+
+  # Static analysis
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Install clang-tidy
+        run: sudo apt-get install -y clang-tidy-14
+        
+      - name: Configure
+        run: cmake -B build -S . -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        
+      - name: Run clang-tidy
+        run: |
+          clang-tidy-14 \
+            -p build \
+            src/**/*.cpp \
+            --warnings-as-errors=* \
+            || true  # Don't fail for now, just warn
+
+  # Address Sanitizer
+  sanitizers:
+    name: Sanitizers
+    runs-on: ubuntu-22.04
+    
+    strategy:
+      matrix:
+        sanitizer: [address, undefined, thread]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Configure with ${{ matrix.sanitizer }} sanitizer
+        run: |
+          cmake -B build -S . \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-fsanitize=${{ matrix.sanitizer }} -fno-omit-frame-pointer -g"
+            
+      - name: Build
+        run: cmake --build build
+        
+      - name: Run tests
         run: ctest --test-dir build --output-on-failure
