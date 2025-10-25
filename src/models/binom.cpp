@@ -27,10 +27,12 @@ namespace {
         return {dt, u, d, p, disc};
     }
 
-    // Core CRR engine. If early_exercise_step_out != nullptr, it will be filled
-    // with the earliest step (0..steps-1) where early exercise is optimal at
-    // any node; or -1 if never optimal. Note this is the earliest layer where
-    // early exercise occurs anywhere, not necessarily along a single optimal path.
+    /* 
+    Core CRR engine. If early_exercise_step_out != nullptr, it will be filled
+    with the earliest step (0..steps-1) where early exercise is optimal at any node; 
+    or -1 if never optimal. Note this is the earliest layer where
+    early exercise occurs anywhere, not necessarily along a single optimal path.
+    */
     double price_crr(double S0, double K, double r, double q, double T, double vol,
                     int steps, bool is_call, bool is_american, int* early_ex_step_out)
     {

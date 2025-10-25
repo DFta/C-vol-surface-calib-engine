@@ -10,6 +10,7 @@
 - **Flags:** `-O3 -march=native -std=c++20`
 - **Date:** October 23, 2025
 
+Run benchmarks yourself: `.\build\vol_bench.exe`, `.\build\binom_bench.exe`
 
 ### Black-Scholes Pricing
 ```
