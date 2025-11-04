@@ -3,6 +3,8 @@
 #include "libvol/models/black_scholes.hpp"
 #include "libvol/mc/gbm.hpp"
 #include "libvol/models/binom.hpp"
+#include "libvol/models/svi.hpp"
+#include "libvol/calib/svi_slice.hpp"
 
 
 
@@ -77,6 +79,40 @@ py::class_<vol::mc::MCResult>(m, "MCResult")
 
 
 m.def("mc_euro_gbm", &vol::mc::european_vanilla_gbm, "Monte Carlo GBM pricer");
+
+// --- SVI params ---
+py::class_<vol::svi::Params>(m, "SVIParams")
+    .def(py::init<>())
+    .def("__repr__", [](const vol::svi::Params& p){
+        return "SVIParams{a=" + std::to_string(p[0]) +
+            ", b=" + std::to_string(p[1]) +
+            ", rho=" + std::to_string(p[2]) +
+            ", m=" + std::to_string(p[3]) +
+            ", sigma=" + std::to_string(p[4]) + "}";
+    });
+
+m.def("svi_total_variance",
+    &vol::svi::total_variance,
+    "SVI total variance w(k) for raw params");
+
+m.def("svi_basic_no_arb",
+    &vol::svi::basic_no_arb,
+    "Basic SVI sanity checks");
+
+// Calibrate a slice directly from (OptionSpec[], mids[])
+m.def("svi_calibrate_slice_from_prices",
+    &vol::svi::calibrate_slice_from_prices,
+    py::arg("opts"), py::arg("mids"),
+    py::arg("cfg") = vol::svi::SliceConfig{});
+
+// Expose SliceConfig for optional tuning
+py::class_<vol::svi::SliceConfig>(m, "SliceConfig")
+    .def(py::init<>())
+    .def_readwrite("use_vega_weights", &vol::svi::SliceConfig::use_vega_weights)
+    .def_readwrite("wing_dampen_pow",  &vol::svi::SliceConfig::wing_dampen_pow)
+    .def_readwrite("min_vega_eps",     &vol::svi::SliceConfig::min_vega_eps)
+    .def_readwrite("min_points",       &vol::svi::SliceConfig::min_points);
+
 }
 
 

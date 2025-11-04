@@ -1,6 +1,5 @@
 #include "libvol/models/black_scholes.hpp"
 #include "libvol/math/root_finders.hpp"
-
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -9,7 +8,7 @@ namespace vol::bs {
     // ------------------------------
     // Implied volatility via Newton (safeguarded) + Brent fallback
     // ------------------------------
-    [[nodiscard]] inline IVResult implied_vol(double S, double K, double r, double q,double T, double target, bool is_call,double init, double tol){
+    [[nodiscard]] IVResult implied_vol(double S, double K, double r, double q,double T, double target, bool is_call,double init, double tol){
         using namespace vol::root;
 
         // ---- Basic input validation
@@ -21,9 +20,9 @@ namespace vol::bs {
         }
 
         // ---- Useful constants
-        constexpr double PI = 3.141592653589793238462643383279502884;
-        constexpr double MIN_SIGMA = 1e-9;     // strictly positive lower bound
-        constexpr double MAX_SIGMA = 5.0;      // very large but finite
+        constexpr double PI               = 3.141592653589793238462643383279502884;
+        constexpr double MIN_SIGMA        = 1e-9;     // strictly positive lower bound
+        constexpr double MAX_SIGMA        = 5.0;      // very large but finite
         constexpr int    MAX_NEWTON_ITERS = 20;
         constexpr int    MAX_BRENT_ITERS  = 100;
 

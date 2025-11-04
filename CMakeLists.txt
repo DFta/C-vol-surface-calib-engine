@@ -37,7 +37,11 @@ add_library(vol STATIC
     src/models/black_scholes.cpp
     src/models/implied_vol.cpp
     src/models/gbm.cpp
-    src/models/binom.cpp)
+    src/models/binom.cpp
+    src/models/svi.cpp
+    src/calib/svi_slice.cpp
+    src/calib/least_squares.cpp
+    )
 target_include_directories(vol PUBLIC include)
 
 # Require C++20 at target level (good with IDEs)
@@ -63,6 +67,12 @@ add_executable(vol_tests
     )
 target_link_libraries(vol_tests PRIVATE vol Catch2::Catch2WithMain)
 add_test(NAME vol_tests COMMAND vol_tests)
+
+# SVI example / test
+add_executable(svi_slice_demo examples/svi_slice_demo.cpp)
+target_include_directories(svi_slice_demo PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(svi_slice_demo PRIVATE vol)  # or whatever your core lib target is
+
 
 # Benchmarks
 add_executable(vol_bench bench/bench_black_scholes.cpp)
