@@ -18,19 +18,19 @@
 
 **What it does**
 
-- Takes a **single expiry** option strip (same \(T\), varying \(K\))  
+- Takes a **single expiry** option strip (same $\(T\)$, varying $\(K\))$  
 - Computes **implied vols** via a robust BS IV solver (safeguarded Newton + Brent)  
-- Converts to **log-moneyness** \(k = \ln(K/F)\) and **total variance** \(w = \sigma^2 T\)  
+- Converts to **log-moneyness** $\(k = \ln(K/F)\)$ and **total variance** $\(w = \sigma^2 T\)$ 
 - Fits a **raw SVI** smile per expiry
 - Uses **vega-weighted least squares** with gentle wing down-weighting for stability  
-- Enforces basic no-arb sanity: \(b > 0\), \(|\rho| < 1\), \(\sigma > 0\) (soft penalties + box constraints)
+- Enforces basic no-arb sanity: $\(b > 0\)$, $\(|\rho| < 1\)$, $\(\sigma > 0\)$ (soft penalties + box constraints)
 
 **Pipeline**
 
 1. Market prices → BS IV (`vol::bs::implied_vol`)  
-2. IVs → total variance grid `(k_i, w_i)`  
+2. IVs → total variance grid `$(k_i, w_i)$`  
 3. Optimize raw SVI params `{a, b, ρ, m, σ}` per slice  
-4. Use `total_variance(k, params)` + \(w/T\) to recover model IVs for pricing / plotting
+4. Use `total_variance(k, params)` + $\(w/T\)$ to recover model IVs for pricing / plotting
 
 **Performance**
 
