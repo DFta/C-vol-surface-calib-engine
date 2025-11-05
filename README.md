@@ -16,6 +16,16 @@
 
 **Performance**
 
+## Svi Slice Performance
+```
+-------------------------------------------------------------------------
+Benchmark                               Time             CPU   Iterations
+-------------------------------------------------------------------------
+BM_SVI_Calibrate_Clean             218825 ns       219727 ns         3200
+BM_SVI_Calibrate_Noisy             224093 ns       219702 ns         2987
+BM_SVI_Calibrate_TermStructure     923726 ns       934710 ns         1120
+```
+
 ## Black-Scholes Performance
 ```
 Benchmark                         Time             CPU   Iterations
