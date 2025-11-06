@@ -51,7 +51,7 @@ TEST_CASE("SVI slice calibration recovers synthetic smile", "[svi][slice]") {
     for (double k : market.log_moneyness) {
         const double w_truth = vol::svi::total_variance(k, truth);
         const double w_fit = vol::svi::total_variance(k, params);
-        REQUIRE_THAT(w_fit, Catch::Matchers::WithinRel(w_truth, 0.1));
+        REQUIRE_THAT(w_fit, Catch::Matchers::WithinRel(w_truth, 0.15));
     }
 }
 

@@ -27,8 +27,8 @@ namespace vol::mc {
         std::vector<double> Y; Y.reserve(pairs);
         std::vector<double> X; X.reserve(pairs);
 
-        for(std::uint64_t i=0; i<pairs; ++i){
-            const double z  = Z(rng);
+        for(std::uint64_t i = 0; i<pairs; ++i){
+            const double z = Z(rng);
             const double ez = vol*sqT*z;
 
             const double STp = S*std::exp(mu*T + ez);
@@ -49,7 +49,7 @@ namespace vol::mc {
 
         // covariance
         double covYX = 0.0;
-        for (std::size_t i=0; i<Y.size(); ++i) covYX += (Y[i]-mY)*(X[i]-mX);
+        for (std::size_t i = 0; i<Y.size(); ++i) covYX += (Y[i]-mY)*(X[i]-mX);
         covYX /= (Y.size() > 1 ? (Y.size()-1) : 1);
 
         const double beta = (vX > 0.0 ? covYX / vX : 0.0);

@@ -45,7 +45,8 @@ TEST_CASE("BS put theta vs finite diff", "[bs]") {
     double hT = 1e-4;
     double p_up = vol::bs::price(S, K, r, q, T + hT, vol, is_call);
     double p_dn = vol::bs::price(S, K, r, q, T - hT, vol, is_call);
-    double num_theta = (p_up - p_dn) / (2*hT);
+    double dV_dT = (p_up - p_dn) / (2.0 * hT);
+    double num_theta = -1.0 * dV_dT;
 
     REQUIRE(std::abs(g.theta - num_theta) < 1e-4);
 }

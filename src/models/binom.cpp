@@ -80,8 +80,8 @@ namespace {
     }
 
     inline double safe_dt_for_theta(double T) {
-        const double min_dt  = 1.0 / 3650.0;       // ~0.1 day
-        const double frac_T  = 0.05 * T;           // 5% of T
+        const double min_dt = 1.0 / 3650.0;       // ~0.1 day
+        const double frac_T = 0.05 * T;           // 5% of T
         const double max_abs = 5.0 / 365.0;        // cap at ~5 days
         return std::min(std::max(min_dt, frac_T), std::max(min_dt, max_abs));
     }
@@ -106,8 +106,8 @@ PriceGreeks price_greeks(double S, double K, double r, double q, double T, doubl
 
     const double hS   = std::max(1e-8, 1e-4 * std::max(1.0, S));
     const double hvol = std::max(1e-8, 1e-4 * std::max(1.0, vol));
-    const double hr   = std::max(1e-8, 1e-5 * std::max(1.0, std::fabs(r)));
-    double hT         = safe_dt_for_theta(T); // years
+    const double hr = std::max(1e-8, 1e-5 * std::max(1.0, std::fabs(r)));
+    double hT = safe_dt_for_theta(T); // years
 
     // Delta & Gamma (central on S)
     const double p_sp = price(S + hS, K, r, q, T, vol, steps, is_call, is_american);
@@ -123,7 +123,7 @@ PriceGreeks price_greeks(double S, double K, double r, double q, double T, doubl
     // Rho (central on r)
     const double p_rp = price(S, K, r + hr, q, T, vol, steps, is_call, is_american);
     const double p_rm = price(S, K, std::max(-0.999, r - hr), q, T, vol, steps, is_call, is_american);
-    const double rho  = (p_rp - p_rm) / (2.0 * hr);
+    const double rho = (p_rp - p_rm) / (2.0 * hr);
 
     // Theta (central on T, change per year)
     double theta;
