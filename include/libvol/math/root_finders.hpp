@@ -45,7 +45,6 @@ inline Result newton(std::function<void(double,double&,double&)> f_df,
             double m = 0.5*(c-b);
             if(std::abs(m) <= tol1 || fb==0.0) return {b,iter,true};
             if(std::abs(fa - fc) > 0 && std::abs(fb - fa) > 0){
-                // inverse quadratic interpolation
                 s = a*fb*fc/((fa-fb)*(fa-fc)) + b*fa*fc/((fb-fa)*(fb-fc)) + c*fa*fb/((fc-fa)*(fc-fb));
             } else {
                 s = b - fb*(b-a)/(fb-fa);

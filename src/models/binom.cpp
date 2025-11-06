@@ -46,7 +46,7 @@ namespace {
             prob = std::min(1.0, std::max(0.0, prob));
         }       
 
-        // Precompute terminal asset prices and option values
+        // Precomputing terminal asset prices and option values
         std::vector<double> V(steps + 1);
         std::vector<double> S(steps + 1);
 

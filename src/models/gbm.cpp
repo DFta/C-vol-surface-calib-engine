@@ -11,7 +11,6 @@ namespace vol::mc {
 
 MCResult european_vanilla_gbm(double S,double K,double r,double q,double T,double vol,bool is_call,
                                 std::uint64_t n_paths, std::uint64_t seed){
-    // ensure even number of paths for antithetics
     if (n_paths % 2ULL) ++n_paths;
 
     std::mt19937_64 rng(seed);
@@ -20,11 +19,10 @@ MCResult european_vanilla_gbm(double S,double K,double r,double q,double T,doubl
     const double sqT  = std::sqrt(T);
     const double mu   = r - q - 0.5*vol*vol;
     const double disc = std::exp(-r*T);
-    const double EX   = S*std::exp(-q*T); // E[ e^{-rT} S_T ] = S e^{-qT}
+    const double EX   = S*std::exp(-q*T); 
 
     const std::uint64_t pairs = n_paths/2;
 
-    // Collect Y and X to compute beta, then form the controlled samples
     std::vector<double> Y;     Y.reserve(pairs);
     std::vector<double> X;     X.reserve(pairs);
 
@@ -42,11 +40,9 @@ MCResult european_vanilla_gbm(double S,double K,double r,double q,double T,doubl
         const double ST_avg     = 0.5*(STp + STm);
 
         Y.push_back(disc * payoff_avg); // target variable
-        X.push_back(disc * ST_avg);     // control with known expectation EX
+        X.push_back(disc * ST_avg);    
     }
 
-    // Compute beta = Cov(Y,X)/Var(X)
-    // (use simple two-pass formulas via stats helpers)
     auto [mY, vY] = vol::stats::mean_var(Y);
     auto [mX, vX] = vol::stats::mean_var(X);
 
@@ -57,7 +53,7 @@ MCResult european_vanilla_gbm(double S,double K,double r,double q,double T,doubl
 
     const double beta = (vX > 0.0 ? covYX / vX : 0.0);
 
-    // Apply control variate
+    //apply control variate
     std::vector<double> Ytilde; Ytilde.reserve(Y.size());
     for (std::size_t i=0; i<Y.size(); ++i) {
         Ytilde.push_back( Y[i] - beta*(X[i] - EX) );

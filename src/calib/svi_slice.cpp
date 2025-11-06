@@ -16,13 +16,11 @@ Params calibrate_slice_from_prices(const std::vector<OptionSpec>& opts, const st
         return Params{1e-8, 0.1, 0.0, 0.0, 0.2};
     }
 
-    // sanity: slice should be single maturity (within a small tolerance)
+    // slice should be single maturity, if not something didn't work in compiling
     const double T0 = opts[0].T;
     const double tolT = 1e-10;
     for (std::size_t i = 1; i < n; ++i) {
         if (std::abs(opts[i].T - T0) > tolT) {
-            // If mixed, we still proceed but this is intended for per-slice
-            // You can split by T outside if needed.
             break;
         }
     }

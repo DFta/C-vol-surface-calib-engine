@@ -6,8 +6,7 @@
 namespace vol::calib {
 struct LSQResult { std::vector<double> x; double rmse; int iters; bool converged; };
 
-
-// Local optimizer (L-BFGS-B) placeholder signature; global wrappers will feed it multiple starts
+//placeholder signature
 LSQResult lbfgsb(
 const std::vector<double>& x0,
 const std::vector<double>& lb,
