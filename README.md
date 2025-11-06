@@ -18,19 +18,19 @@
 
 **What it does**
 
-- Takes a **single expiry** option strip (same \(T\), varying \(K\))  
+- Takes a **single expiry** option strip (same $\(T\)$, varying $\(K\))$  
 - Computes **implied vols** via a robust BS IV solver (safeguarded Newton + Brent)  
-- Converts to **log-moneyness** \(k = \ln(K/F)\) and **total variance** \(w = \sigma^2 T\)  
+- Converts to **log-moneyness** $\(k = \ln(K/F)\)$ and **total variance** $\(w = \sigma^2 T\)$ 
 - Fits a **raw SVI** smile per expiry
 - Uses **vega-weighted least squares** with gentle wing down-weighting for stability  
-- Enforces basic no-arb sanity: \(b > 0\), \(|\rho| < 1\), \(\sigma > 0\) (soft penalties + box constraints)
+- Enforces basic no-arb sanity: $\(b > 0\)$, $\(|\rho| < 1\)$, $\(\sigma > 0\)$ (soft penalties + box constraints)
 
 **Pipeline**
 
 1. Market prices → BS IV (`vol::bs::implied_vol`)  
-2. IVs → total variance grid `(k_i, w_i)`  
+2. IVs → total variance grid `$(k_i, w_i)$`  
 3. Optimize raw SVI params `{a, b, ρ, m, σ}` per slice  
-4. Use `total_variance(k, params)` + \(w/T\) to recover model IVs for pricing / plotting
+4. Use `total_variance(k, params)` + $\(w/T\)$ to recover model IVs for pricing / plotting
 
 **Performance**
 
@@ -46,14 +46,15 @@ BM_SVI_Calibrate_TermStructure     923726 ns       934710 ns         1120
 
 ## Black-Scholes Performance
 ```
+-------------------------------------------------------------------
 Benchmark                         Time             CPU   Iterations
 -------------------------------------------------------------------
-BM_Price_ATM                   41.2 ns         41.9 ns     17920000
-BM_Price_OTM                   39.0 ns         37.7 ns     18666667
-BM_PriceGreeks_ATM              121 ns          120 ns      6400000
-BM_Price_MultipleStrikes        423 ns          417 ns      1947826
-BM_Price_ShortDated            42.4 ns         42.0 ns     16000000
-BM_Price_Put                   44.9 ns         43.0 ns     16000000
+BM_Price_ATM                   38.6 ns         38.5 ns     19478261
+BM_Price_OTM                   36.6 ns         36.1 ns     19478261
+BM_PriceGreeks_ATM              112 ns          109 ns      5600000
+BM_Price_MultipleStrikes        393 ns          385 ns      1866667
+BM_Price_ShortDated            38.3 ns         38.4 ns     17920000
+BM_Price_Put                   40.8 ns         41.0 ns     17920000
 ```
 
 ### Binomial Tree Performance
