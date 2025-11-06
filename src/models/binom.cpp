@@ -27,12 +27,7 @@ namespace {
         return {dt, u, d, p, disc};
     }
 
-    /* 
-    Core CRR engine. If early_exercise_step_out != nullptr, it will be filled
-    with the earliest step (0..steps-1) where early exercise is optimal at any node; 
-    or -1 if never optimal. Note this is the earliest layer where
-    early exercise occurs anywhere, not necessarily along a single optimal path.
-    */
+    //CRR engine
     double price_crr(double S0, double K, double r, double q, double T, double vol,
                     int steps, bool is_call, bool is_american, int* early_ex_step_out)
     {
@@ -50,9 +45,8 @@ namespace {
         std::vector<double> V(steps + 1);
         std::vector<double> S(steps + 1);
 
-        // S_N(j) = S0 * u^j * d^(N-j)
         double Sj = S0 * std::pow(p.d, steps);
-        const double ud = p.u / p.d; // = u^2 since d=1/u
+        const double ud = p.u / p.d;
         for (int j = 0; j <= steps; ++j) {
             S[j] = Sj;
             V[j] = intrinsic(is_call, S[j], K);
@@ -65,17 +59,15 @@ namespace {
         for (int n = steps - 1; n >= 0; --n) {
             for (int j = 0; j <= n; ++j) {
                 const double cont = p.disc * (prob * V[j + 1] + (1.0 - prob) * V[j]);
-                if (is_american) {
-                    // Recompute S at this layer/node from child
-                    const double S_nj = S[j] / p.d; // going one step back is divide by d
+                if (is_american)
+                    const double S_nj = S[j] / p.d;
                     const double exer = intrinsic(is_call, S_nj, K);
                     const double vn = std::max(cont, exer);
                     if (earliest_ex_step == -1 && exer > cont + 1e-16) {
-                        // note: numerical tolerance
                         earliest_ex_step = n;
                     }
                     V[j] = vn;
-                    S[j] = S_nj; // maintain S for next loop
+                    S[j] = S_nj;
                 } else {
                     V[j] = cont;
                     S[j] = S[j] / p.d;
@@ -88,7 +80,6 @@ namespace {
     }
 
     inline double safe_dt_for_theta(double T) {
-        // keep finite difference stable vs. very short maturities
         const double min_dt  = 1.0 / 3650.0;       // ~0.1 day
         const double frac_T  = 0.05 * T;           // 5% of T
         const double max_abs = 5.0 / 365.0;        // cap at ~5 days
@@ -111,10 +102,8 @@ BinomialResult price_w_info(double S, double K, double r, double q, double T,
 
 PriceGreeks price_greeks(double S, double K, double r, double q, double T, double vol, int steps, bool is_call, bool is_american)
 {
-    // Base price
     const double base = price(S, K, r, q, T, vol, steps, is_call, is_american);
 
-    // Bump sizes (relative when sensible)
     const double hS   = std::max(1e-8, 1e-4 * std::max(1.0, S));
     const double hvol = std::max(1e-8, 1e-4 * std::max(1.0, vol));
     const double hr   = std::max(1e-8, 1e-5 * std::max(1.0, std::fabs(r)));
@@ -136,8 +125,7 @@ PriceGreeks price_greeks(double S, double K, double r, double q, double T, doubl
     const double p_rm = price(S, K, std::max(-0.999, r - hr), q, T, vol, steps, is_call, is_american);
     const double rho  = (p_rp - p_rm) / (2.0 * hr);
 
-    // Theta (central on T; note theta is ∂V/∂T, i.e., change per year)
-    // If T is very small, fall back to one-sided forward difference.
+    // Theta (central on T, change per year)
     double theta;
     if (T > hT) {
         const double p_tp = price(S, K, r, q, T + hT, vol, steps, is_call, is_american);
