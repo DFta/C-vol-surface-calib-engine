@@ -9,9 +9,9 @@ A small C++20 volatility and option pricing library implementing:
 - C++ and Python (pybind11) APIs
 
 **Building & Testing**
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-ctest --test-dir build
+- cmake -B build -DCMAKE_BUILD_TYPE=Release
+- cmake --build build
+- ctest --test-dir build
 
 **Next sprints**
 - Heston CF pricing (Gauss–Laguerre), then calibration
