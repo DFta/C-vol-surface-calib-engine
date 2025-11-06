@@ -8,9 +8,9 @@ int main() {
     using vol::svi::Params;
 
     //Example, replace with real quotes
-    const double S=50, r=0.02, q=0.02, T=0.5; // 6 months
+    const double S=50, r=0.02, q=0.02, T=0.5;
     std::vector<OptionSpec> opts = {
-        {S,  80, r, q, T, true}, {S,  90, r, q, T, true}, {S, 100, r, q, T, true},
+        {S, 80, r, q, T, true}, {S,  90, r, q, T, true}, {S, 100, r, q, T, true},
         {S, 110, r, q, T, true}, {S, 120, r, q, T, true}
     };
     std::vector<double> mids = {21.2, 12.7, 6.8, 3.1, 1.2}; // replace with market mids

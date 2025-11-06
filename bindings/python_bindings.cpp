@@ -5,6 +5,7 @@
 #include "libvol/models/binom.hpp"
 #include "libvol/models/svi.hpp"
 #include "libvol/calib/svi_slice.hpp"
+#include "libvol/core/types.hpp"
 
 
 
@@ -99,7 +100,17 @@ m.def("svi_basic_no_arb",
     &vol::svi::basic_no_arb,
     "Basic SVI sanity checks");
 
-// Calibrate a slice directly from (OptionSpec[], mids[])
+py::class_<vol::OptionSpec>(m, "OptionSpec")
+    .def(py::init<double,double,double,double,double,bool>(),
+         py::arg("S"), py::arg("K"), py::arg("r"),
+         py::arg("q"), py::arg("T"), py::arg("is_call"))
+    .def_readwrite("S", &vol::OptionSpec::S)
+    .def_readwrite("K", &vol::OptionSpec::K)
+    .def_readwrite("r", &vol::OptionSpec::r)
+    .def_readwrite("q", &vol::OptionSpec::q)
+    .def_readwrite("T", &vol::OptionSpec::T)
+    .def_readwrite("is_call", &vol::OptionSpec::is_call);
+    
 m.def("svi_calibrate_slice_from_prices",
     &vol::svi::calibrate_slice_from_prices,
     py::arg("opts"), py::arg("mids"),

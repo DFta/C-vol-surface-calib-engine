@@ -2,6 +2,7 @@
 #include "libvol/models/black_scholes.hpp"
 #include <cmath>
 #include <algorithm>
+#include <stdexcept>
 
 namespace vol::svi {
 
@@ -21,13 +22,13 @@ Params calibrate_slice_from_prices(const std::vector<OptionSpec>& opts, const st
     const double tolT = 1e-10;
     for (std::size_t i = 1; i < n; ++i) {
         if (std::abs(opts[i].T - T0) > tolT) {
-            break;
+            throw std::invalid_argument("calibrate_slice_from_prices: options must share same maturity");
         }
     }
 
-    std::vector<double> kvals;      kvals.reserve(n);
-    std::vector<double> w_market;   w_market.reserve(n);
-    std::vector<double> weights;    weights.reserve(n);
+    std::vector<double> kvals; kvals.reserve(n);
+    std::vector<double> w_market; w_market.reserve(n);
+    std::vector<double> weights; weights.reserve(n);
 
     for (std::size_t i = 0; i < n; ++i) {
         const auto& o = opts[i];
@@ -38,16 +39,16 @@ Params calibrate_slice_from_prices(const std::vector<OptionSpec>& opts, const st
         auto ivr = bs::implied_vol(o.S, o.K, o.r, o.q, o.T, mid, o.is_call, 0.2, 1e-10);
         if (!ivr.converged || !std::isfinite(ivr.iv) || ivr.iv <= 0.0) continue;
 
-        const double F  = o.S * std::exp((o.r - o.q) * o.T);
-        const double k  = std::log(o.K / F);
-        const double w  = ivr.iv * ivr.iv * o.T;
+        const double F = o.S * std::exp((o.r - o.q) * o.T);
+        const double k = std::log(o.K / F);
+        const double w = ivr.iv * ivr.iv * o.T;
 
         double wt = 1.0;
         if (cfg.use_vega_weights) {
             auto g = bs::price_greeks(o.S, o.K, o.r, o.q, o.T, ivr.iv, o.is_call);
             wt = std::max(cfg.min_vega_eps, g.vega);
         }
-        // dampen far-wings a bit (helps stability)
+        // dampen far-wings a bit
         wt *= 1.0 / (1.0 + std::pow(std::abs(k), cfg.wing_dampen_pow));
 
         kvals.push_back(k);

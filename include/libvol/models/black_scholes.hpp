@@ -4,10 +4,10 @@
 
 namespace vol::bs {
 
-struct PriceGreeks { double price, delta, gamma, vega, theta, rho; };
+struct PriceGreeks {double price, delta, gamma, vega, theta, rho;};
 
 
-//pdf/cdf
+//pdf & cdf
 double phi(double x);
 double Phi(double x);
 

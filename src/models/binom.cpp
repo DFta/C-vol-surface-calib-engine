@@ -55,11 +55,11 @@ namespace {
 
         int earliest_ex_step = -1;
 
-        // Backward induction
+        //backward induction
         for (int n = steps - 1; n >= 0; --n) {
             for (int j = 0; j <= n; ++j) {
                 const double cont = p.disc * (prob * V[j + 1] + (1.0 - prob) * V[j]);
-                if (is_american)
+                if (is_american) {
                     const double S_nj = S[j] / p.d;
                     const double exer = intrinsic(is_call, S_nj, K);
                     const double vn = std::max(cont, exer);

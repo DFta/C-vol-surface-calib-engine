@@ -100,7 +100,7 @@ jobs:
       - name: Test Python bindings
         if: matrix.build_type == 'Release'
         run: |
-          python -m pip install ./build
+          export PYTHONPATH="$PWD/build:$PYTHONPATH"
           python -c "import volpy; print('Python bindings OK')"
           python -c "import volpy; assert abs(volpy.bs_price(100,100,0.05,0,1,0.25,True) - 10.45) < 0.1"
         shell: bash
@@ -167,7 +167,7 @@ jobs:
         uses: benchmark-action/github-action-benchmark@v1
         with:
           name: C++ Benchmark
-          tool: 'googletest'
+          tool: 'google-benchmark'
           output-file-path: benchmark_result.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true

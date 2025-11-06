@@ -21,7 +21,7 @@ LSQResult lbfgsb(
     auto project = [&](std::vector<double>& v){
         for (int i = 0; i < n; ++i) {
             double lo = (i < (int)lb.size() ? lb[i] : -std::numeric_limits<double>::infinity());
-            double hi = (i < (int)ub.size() ? ub[i] :  std::numeric_limits<double>::infinity());
+            double hi = (i < (int)ub.size() ? ub[i] : std::numeric_limits<double>::infinity());
             if (v[i] < lo) v[i] = lo;
             if (v[i] > hi) v[i] = hi;
         }

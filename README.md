@@ -1,13 +1,17 @@
-# C-vol-surface-calib-engine
+# Libvol
 
-**MVP targets**
-- BS price within 1e-8 vs closed form (tests included)
-- Greeks within 1e-5 vs finite difference (tests included)
-- IV solver robust: Newton with Brent fallback
-- Slice-by-slice SVI smile calibration (raw SVI per expiry) on top of BS IVs
-- MC with antithetic + placeholder control variate, CI reported
-- Python bindings: `pip install .` (wheel later), `import volpy`
+A small C++20 volatility and option pricing library implementing:
+- Black–Scholes pricing + Greeks + robust implied vol solver
+- CRR binomial tree (American/European, price + Greeks + early exercise info)
+- GBM Monte Carlo with antithetic and control variate
+- SVI slice calibration on top of BS implied vols
+- Benchmarks (~40 ns per BS price on i7-12650H)
+- C++ and Python (pybind11) APIs
 
+**Building & Testing**
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+ctest --test-dir build
 
 **Next sprints**
 - Heston CF pricing (Gauss–Laguerre), then calibration

@@ -73,9 +73,9 @@ namespace vol::svi {
         }
 
         double M[3][4] = {
-            {S0, S1, S2, Sy   },
-            {S1, S2, S3, Sxy  },
-            {S2, S3, S4, Sx2y }
+            {S0, S1, S2, Sy},
+            {S1, S2, S3, Sxy},
+            {S2, S3, S4, Sx2y}
         };
         // Gaussian elimination
         for (int col = 0; col < 3; ++col) {
@@ -128,8 +128,8 @@ namespace vol::svi {
 
         const double kmin = k_sorted.front();
         const double kmax = k_sorted.back();
-        const double wrange = (*std::max_element(w_sorted.begin(), w_sorted.end()) -
-                            *std::min_element(w_sorted.begin(), w_sorted.end()));
+        auto [min_it, max_it] = std::minmax_element(w_sorted.begin(), w_sorted.end()); 
+        const double wrange = *max_it - *min_it;//faster than scanning twice
         const double range_k = std::max(1e-6, kmax - kmin);
 
         std::size_t i_min = 0;
@@ -207,8 +207,8 @@ namespace vol::svi {
             g[4] = gs * inv;
 
             double pen = 0.0;
-            if (b <= 0.0)      { pen += (1.0 - std::tanh( 100.0 * b));       g[1] += -100.0 * inv; }
-            if (std::abs(rho) >= 1.0){ pen += std::tanh(100.0 * (std::abs(rho) - 0.999)); g[2] +=  100.0 * inv * ((rho > 0) ? 1.0 : -1.0); }
+            if (b <= 0.0) { pen += (1.0 - std::tanh( 100.0 * b)); g[1] += -100.0 * inv;}
+            if (std::abs(rho) >= 1.0){ pen += std::tanh(100.0 * (std::abs(rho) - 0.999)); g[2] +=  100.0 * inv * ((rho > 0) ? 1.0 : -1.0);}
             if (sigma <= 0.0)  { pen += (1.0 - std::tanh( 100.0 * sigma));   g[4] += -100.0 * inv; }
             f += 1e-8 * pen;
         };
@@ -226,7 +226,7 @@ namespace vol::svi {
         for (const auto& s : starts) {
             auto res = calib::lbfgsb(s, lb, ub, f_grad, 500, base_tol);
             if (res.converged && res.x.size() == 5) {
-                const double rmse = std::sqrt(std::max(0.0, res.rmse));
+                const double rmse = std::sqrt(std::max(0.0, 2.0 * res.obj));
                 if (rmse < best_rmse) {
                     best_rmse = rmse;
                     best_p = Params{ res.x[0], res.x[1], res.x[2], res.x[3], res.x[4] };

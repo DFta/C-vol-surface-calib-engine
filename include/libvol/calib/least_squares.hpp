@@ -4,7 +4,7 @@
 
 
 namespace vol::calib {
-struct LSQResult { std::vector<double> x; double rmse; int iters; bool converged; };
+struct LSQResult {std::vector<double> x; double obj; int iters; bool converged;};
 
 //placeholder signature
 LSQResult lbfgsb(

@@ -1,5 +1,6 @@
 #include "libvol/models/black_scholes.hpp"
 #include "libvol/math/root_finders.hpp"
+#include "libvol/core/constants.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -18,15 +19,14 @@ namespace vol::bs {
         }
 
         // useful constants
-        constexpr double PI               = 3.141592653589793238462643383279502884;
-        constexpr double MIN_SIGMA        = 1e-9;     
-        constexpr double MAX_SIGMA        = 5.0;      
-        constexpr int    MAX_NEWTON_ITERS = 20;
-        constexpr int    MAX_BRENT_ITERS  = 100;
+        constexpr double MIN_SIGMA = 1e-9;     
+        constexpr double MAX_SIGMA = 5.0;      
+        constexpr int MAX_NEWTON_ITERS = 20;
+        constexpr int MAX_BRENT_ITERS  = 100;
 
         const double df_r = std::exp(-r * T);
         const double df_q = std::exp(-q * T);
-        const double F    = S * std::exp((r - q) * T);
+        const double F = S * std::exp((r - q) * T);
 
         const double intrinsic = (is_call
             ? std::max(0.0, S * df_q - K * df_r)
@@ -62,8 +62,8 @@ namespace vol::bs {
 
         auto f_price_vega = [&](double sigma, double& f, double& vega) {
             auto g = price_greeks(S, K, r, q, T, sigma, is_call);
-            f    = g.price - target;
-            vega = g.vega;           // per 1.0 vol (not %)
+            f = g.price - target;
+            vega = g.vega;// per 1.0 vol (not %)
         };
 
         //initial guess
@@ -74,7 +74,7 @@ namespace vol::bs {
             sigma = init;
         } else {
             const double c_norm = target / (S * df_q);
-            const double guess  = std::sqrt(std::max(1e-12, (2.0 * PI / T))) * std::max(1e-12, c_norm);
+            const double guess = std::sqrt(std::max(1e-12, (2.0 * vol::PI / T))) * std::max(1e-12, c_norm);
             const double xm = std::abs(std::log((F + 1e-300) / (K + 1e-300)));
             const double lm_scale = std::sqrt(std::max(1e-12, 2.0 * xm / T));
             sigma = std::clamp(0.5 * (guess + lm_scale), MIN_SIGMA, 1.0);
@@ -108,8 +108,8 @@ namespace vol::bs {
         }
 
         int newton_iters = 0;
-        bool newton_ok   = false;
-        sigma            = std::clamp(sigma, lo, hi);
+        bool newton_ok = false;
+        sigma = std::clamp(sigma, lo, hi);
 
         for (; newton_iters < MAX_NEWTON_ITERS; ++newton_iters) {
             double f, vega;

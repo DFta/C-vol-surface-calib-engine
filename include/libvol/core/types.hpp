@@ -1,10 +1,8 @@
 #pragma once
-#include <vector>
-#include <cstdint>
 
-
+//had more but deleted the real(double) and vec(vector) types that chatgpt recommended since I didn't use them
+//doesn't really make sense to move optionspec to another header either
+//(plain vanilla euro option specification)
 namespace vol {
-using Real = double;
-using Vec = std::vector<Real>;
-struct OptionSpec { Real S, K, r, q, T; bool is_call; };
+struct OptionSpec { double S, K, r, q, T; bool is_call; };
 }
