@@ -44,16 +44,6 @@ namespace vol::svi {
         slope_out = (std::abs(den) > 0.0) ? (n_d * sxy - sx * sy) / den : 0.0;
     }
 
-    static inline double weighted_mean(const std::vector<double>& x, const std::vector<double>& w) {
-        double sw = 0.0, sx = 0.0;
-        for (std::size_t i = 0; i < x.size(); ++i) {
-            const double wi = (i < w.size() ? w[i] : 1.0);
-            sw += wi;
-            sx += wi * x[i];
-        }
-        return (sw > 0.0 ? sx / sw : 0.0);
-    }
-
     static inline double local_quadratic_curvature(const std::vector<double>& k, const std::vector<double>& w, std::size_t idx_min) {
         const std::size_t n = k.size();
         if (n < 3) return 0.0;
