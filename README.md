@@ -18,16 +18,15 @@ A small C++20 volatility and option pricing library implementing:
 - Calibration framework (global + local), parameter bounds/penalties
 - RND extraction (Breeden–Litzenberger) + diagnostics
 
-## SVI Slice-by-Slice Calibration (New)
+## SVI Slice-by-Slice Calibration 
 
 **What it does**
-
-- Takes a **single expiry** option strip (same $\(T\)$, varying $\(K\))$  
-- Computes **implied vols** via a robust BS IV solver (safeguarded Newton + Brent)  
-- Converts to **log-moneyness** $\(k = \ln(K/F)\)$ and **total variance** $\(w = \sigma^2 T\)$ 
-- Fits a **raw SVI** smile per expiry
-- Uses **vega-weighted least squares** with gentle wing down-weighting for stability  
-- Enforces basic no-arb sanity: $\(b > 0\)$, $\(|\rho| < 1\)$, $\(\sigma > 0\)$ (soft penalties + box constraints)
+- Takes a single expiry option strip (same $\(T\)$, varying $\(K\))$  
+- Computes implied volatilities via a BS IV solver (safeguarded Newton + Brent)  
+- Converts to *log-moneyness $\(k = \ln(K/F)\)$ and total variance $\(w = \sigma^2 T\)$ 
+- Fits a raw SVI smile per expiry
+- Uses vega-weighted least squares with gentle wing down-weighting for stability  
+- Enforces basic no-arb: $\(b > 0\)$, $\(|\rho| < 1\)$, $\(\sigma > 0\)$ (soft penalties + box constraints)
 
 **Pipeline**
 
