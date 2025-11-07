@@ -31,8 +31,8 @@ A small C++20 volatility and option pricing library implementing:
 **Pipeline**
 
 1. Market prices → BS IV (`vol::bs::implied_vol`)  
-2. IVs → total variance grid `$(k_i, w_i)$`  
-3. Optimize raw SVI params `{a, b, ρ, m, σ}` per slice  
+2. IVs → total variance grid $(k_i, w_i)$  
+3. Optimize raw SVI parameters {a, b, ρ, m, σ} per slice  
 4. Use `total_variance(k, params)` + $\(w/T\)$ to recover model IVs for pricing / plotting
 
 **Performance**
