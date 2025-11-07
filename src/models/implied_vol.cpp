@@ -22,7 +22,7 @@ namespace vol::bs {
         constexpr double MIN_SIGMA = 1e-9;     
         constexpr double MAX_SIGMA = 5.0;      
         constexpr int MAX_NEWTON_ITERS = 20;
-        constexpr int MAX_BRENT_ITERS  = 100;
+        constexpr int MAX_BRENT_ITERS = 100;
 
         const double df_r = std::exp(-r * T);
         const double df_q = std::exp(-q * T);

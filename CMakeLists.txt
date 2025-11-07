@@ -74,8 +74,8 @@ target_link_libraries(svi_slice_demo PRIVATE vol)
 
 
 # Benchmarks
-add_executable(vol_bench bench/bench_black_scholes.cpp)
-target_link_libraries(vol_bench PRIVATE vol benchmark::benchmark Threads::Threads)
+add_executable(bs_bench bench/bench_black_scholes.cpp)
+target_link_libraries(bs_bench PRIVATE vol benchmark::benchmark Threads::Threads)
 add_executable(binom_bench bench/bench_binom.cpp)
 target_link_libraries(binom_bench PRIVATE vol benchmark::benchmark Threads::Threads)
 add_executable(svi_slice_bench bench/bench_svi_slice.cpp)

@@ -7,56 +7,65 @@
 - **RAM:** 16.0 GB (15.7 GB usable)
 - **OS:** Windows 11
 - **Compiler:** MSVC 19.44.35219.0
-- **Flags:** `-O3 -march=native -std=c++20`
-- **Date:** October 23, 2025
+- **Build Type:** Release
+- **Flags:** /O2, /std:c++20
+- **Precision:** double
+- **Threads:** single-threaded
+- **Date:** November 7, 2025
 
-Run benchmarks yourself: `.\build\vol_bench.exe`, `.\build\binom_bench.exe`
+- Black–Scholes benchmarks: `bench/bench_black_scholes.cpp`
+- Binomial benchmarks: `bench/bench_binom.cpp`
+- SVI slice benchmarks: `bench/bench_svi_slice.cpp`
+
+## Running Benchmarks
+```bash
+# With ninja:
+cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+.\build\vol_bench.exe
+.\build\binom_bench.exe
+.\build\svi_slice_bench.exe
+
+# With MSVC:
+cmake -S . -B build
+cmake --build build --config Release
+.\build\Release\vol_bench.exe
+.\build\Release\binom_bench.exe
+.\build\Release\svi_slice_bench.exe
+
+(use / if on linux or macos)
+
+# Custom (ninja example)
+.\build\vol_bench --benchmark_repetitions=10 --benchmark_min_time=1.0
+```
 
 ### Black-Scholes Pricing
 ```
 -------------------------------------------------------------------
 Benchmark                         Time             CPU   Iterations
 -------------------------------------------------------------------
-BM_Price_ATM                   41.2 ns         41.9 ns     17920000
-BM_Price_OTM                   39.0 ns         37.7 ns     18666667
-BM_PriceGreeks_ATM              121 ns          120 ns      6400000
-BM_Price_MultipleStrikes        423 ns          417 ns      1947826
-BM_Price_ShortDated            42.4 ns         42.0 ns     16000000
-BM_Price_Put                   44.9 ns         43.0 ns     16000000
+BM_Price_ATM                   38.6 ns         38.5 ns     19478261
+BM_Price_OTM                   36.6 ns         36.1 ns     19478261
+BM_PriceGreeks_ATM              112 ns          109 ns      5600000
+BM_Price_MultipleStrikes        393 ns          385 ns      1866667
+BM_Price_ShortDated            38.3 ns         38.4 ns     17920000
+BM_Price_Put                   40.8 ns         41.0 ns     17920000
 ```
+**Summary**
 
-### Interpretation
-
-- **Single price calculation:** ~40 nanoseconds
-  - ----> Can price **25 million options per second** (single-threaded) <----
-  
-- **Price + Greeks:** ~120 nanoseconds
-  - 3x overhead for computing all Greeks (delta, gamma, vega, theta, rho) (low, other lesser libraries )
-  - ----> Can compute **8 million Greeks per second** <----
-
-- **Linear scaling:** Multiple strikes scale linearly (~42 ns per option)
+- ~**39 ns** per price
+  - about **25 million prices/sec** (single-threaded).
+- ~**110 ns** for price + Greeks
+  - about **9 million price+Greek evaluations/sec**.
+- Performance scales linearly with number of strikes.
 
 ### Comparison to Other Libraries
-
 | Library          | Price Time |
 |------------------|------------|
-| LibVol (this lib)| **40 ns**  |
+| LibVol (this lib)| **39 ns**  |
 | QuantLib         | ~150 ns    |
 | NumPy (Python)   | ~500 ns    |
 | Pure Python      | ~50 μs     |
-
-## Running Benchmarks
-```bash
-# Build with optimizations
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-
-# Run benchmarks
-./build/vol_bench
-
-# Run with custom iterations
-./build/vol_bench --benchmark_repetitions=10 --benchmark_min_time=1.0
-```
 
 ## Binomial Pricing
 ```
@@ -105,3 +114,32 @@ BM_Binom_Error_vs_BS/256                 34071 ns        33692 ns        21333 a
 BM_Binom_Error_vs_BS/512                136032 ns       136719 ns         5600 abs_err_vs_BS=4.72201m steps=512
 BM_Binom_Error_vs_BS/1024               549743 ns       530134 ns         1120 abs_err_vs_BS=2.3613m steps=1.024k
 ```
+**Summary**
+
+Approximate timings for pricing a single European call:
+
+| Steps | Euro price time | Euro+Greeks time | Typical use case                 |
+|-------|-----------------|------------------|----------------------------------|
+| 50    | ~1.4 µs         | ~13 µs           | Real-time pricing                |
+| 256   | ~33 µs          | ~300 µs          | High accuracy (< 1¢ error vs BS) |
+| 1024  | ~0.55 ms        | ~4.7 ms          | Research / model validation      |
+
+- Error vs Black–Scholes decreases roughly like \(O(1/\sqrt{N})\) with steps.
+- Benchmarks include both American and European payoffs, plus finite-difference Greeks.
+
+# SVI Slice Calibration
+```
+-------------------------------------------------------------------------
+Benchmark                               Time             CPU   Iterations
+-------------------------------------------------------------------------
+BM_SVI_Calibrate_Clean             218264 ns       217644 ns         3446
+BM_SVI_Calibrate_Noisy             220905 ns       214844 ns         3200
+BM_SVI_Calibrate_TermStructure     896965 ns       906808 ns          896
+```
+**Summary**
+
+- Clean slice calibration: ~0.22 ms.
+- Noisy slice calibration: ~0.22 ms (robust to moderate noise).
+- Full term-structure (multiple expiries): ~0.9 ms.
+
+This is fast enough to refit an entire term-structure interactively or on each refresh.
