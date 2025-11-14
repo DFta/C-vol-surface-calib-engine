@@ -143,3 +143,24 @@ BM_SVI_Calibrate_TermStructure     896965 ns       906808 ns          896
 - Full term-structure (multiple expiries): ~0.9 ms.
 
 This is fast enough to refit an entire term-structure interactively or on each refresh.
+
+## Heston Pricing
+```
+--------------------------------------------------------------------------
+Benchmark                                Time             CPU   Iterations
+--------------------------------------------------------------------------
+BM_Heston_ATM_Call64                 27173 ns        27344 ns        28000
+BM_Heston_OTM_Call64                 25743 ns        25670 ns        28000
+BM_Heston_ATM_Put64                  26350 ns        26228 ns        28000
+BM_Heston_Portfolio64               212158 ns       209961 ns         3200
+BM_Heston_GaussLaguerreOrder/32      12648 ns        12556 ns        49778 n_gl=32
+BM_Heston_GaussLaguerreOrder/64      27551 ns        27867 ns        26353 n_gl=64
+BM_Heston_GaussLaguerreOrder/96      40872 ns        40491 ns        16593 n_gl=96
+```
+
+**Summary**
+
+- ~38k prices / second
+- Runtime scales roughly linearly with n_gl (more nodes → more integrand evaluations)
+
+Fast enough for interactive pricing and calibration loops

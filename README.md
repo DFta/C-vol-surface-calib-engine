@@ -2,10 +2,11 @@
 
 ## Overview
 A small C++20 volatility and option pricing library implementing:
-- Black–Scholes pricing + Greeks + robust implied vol solver
+- Black-Scholes pricing + Greeks + robust implied vol solver
 - CRR binomial tree (American/European, price + Greeks + early exercise info)
 - GBM Monte Carlo with antithetic and control variate
 - SVI slice calibration on top of BS implied vols
+- Heston CF vanilla pricing (Carr-Madan/Attari + Gauss-Laguerre integration)
 - Benchmarks (~40 ns per BS price on i7-12650H)
 - C++ and Python (pybind11) APIs
 
@@ -40,9 +41,9 @@ MSVC / Windows
 
 
 **Next sprints**
-- Heston CF pricing (Gauss–Laguerre), then calibration
+- Heston calibration (global + local search, bounds/penalties)
 - Calibration framework (global + local), parameter bounds/penalties
-- RND extraction (Breeden–Litzenberger) + diagnostics
+- RND extraction (Breeden-Litzenberger) + diagnostics
 
 ## SVI Slice-by-Slice Calibration (New)
 
@@ -57,12 +58,12 @@ MSVC / Windows
 
 **Pipeline**
 
-1. Market prices → BS IV (`vol::bs::implied_vol`)  
-2. IVs → total variance grid `$(k_i, w_i)$`  
-3. Optimize raw SVI params `{a, b, ρ, m, σ}` per slice  
+1. Market prices -> BS IV (`vol::bs::implied_vol`)  
+2. IVs -> total variance grid `$(k_i, w_i)$`  
+3. Optimize raw SVI params `{a, b, rho, m, sigma}` per slice  
 4. Use `total_variance(k, params)` + $w/T$ to recover model IVs for pricing / plotting
 
-See `benchmarks.md` for full micro-benchmarks (Black–Scholes, binomial, SVI).
+See `benchmarks.md` for full micro-benchmarks (Black-Scholes, binomial, SVI).
 
 ### Key Micro-Benchmarks
 ```
@@ -74,6 +75,8 @@ BM_Price_ATM                       38.6 ns         38.5 ns       19478261
 BM_PriceGreeks_ATM                 112 ns          109 ns         5600000
 BM_Binom_Price_Amer_Put/256        37624 ns        37667 ns         18667
 ```
+
+Additional Heston CF timings (ATM/OTM/portfolio prices + Gauss-Laguerre order sweeps) are available via the `heston_bench` target.
 
 **Binomial Convergence to Black-Scholes:**
 - 50 steps: 0.048 error

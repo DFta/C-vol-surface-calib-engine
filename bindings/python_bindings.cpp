@@ -3,6 +3,7 @@
 #include "libvol/models/black_scholes.hpp"
 #include "libvol/mc/gbm.hpp"
 #include "libvol/models/binom.hpp"
+#include "libvol/models/heston.hpp"
 #include "libvol/models/svi.hpp"
 #include "libvol/calib/svi_slice.hpp"
 #include "libvol/core/types.hpp"
@@ -96,6 +97,24 @@ PYBIND11_MODULE(volpy, m) {
     m.def("mc_euro_gbm",
         &vol::mc::european_vanilla_gbm,
         "Monte Carlo GBM pricer");
+
+    // --- Heston model ---
+    py::class_<vol::heston::Params>(m, "HestonParams")
+        .def(py::init<double,double,double,double,double>(),
+            py::arg("kappa"), py::arg("theta"), py::arg("sigma"),
+            py::arg("rho"), py::arg("v0"))
+        .def_readwrite("kappa", &vol::heston::Params::kappa)
+        .def_readwrite("theta", &vol::heston::Params::theta)
+        .def_readwrite("sigma", &vol::heston::Params::sigma)
+        .def_readwrite("rho", &vol::heston::Params::rho)
+        .def_readwrite("v0", &vol::heston::Params::v0);
+
+    m.def("heston_price_cf",
+        &vol::heston::price_cf,
+        "Carr-Madan/Attari vanilla price via Gauss-Laguerre integration",
+        py::arg("S"), py::arg("K"), py::arg("r"), py::arg("q"),
+        py::arg("T"), py::arg("params"), py::arg("is_call"),
+        py::arg("n_gl") = 64);
 
     // --- SVI params ---
     py::class_<vol::svi::Params>(m, "SVIParams")

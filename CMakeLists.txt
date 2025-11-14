@@ -38,7 +38,9 @@ add_library(vol STATIC
     src/models/implied_vol.cpp
     src/models/gbm.cpp
     src/models/binom.cpp
+    src/models/heston.cpp
     src/models/svi.cpp
+    src/math/quadrature.cpp
     src/calib/svi_slice.cpp
     src/calib/least_squares.cpp
     )
@@ -63,6 +65,7 @@ add_executable(vol_tests
     tests/test_implied_vol.cpp
     tests/test_binom.cpp
     tests/test_svi_slice.cpp
+    tests/test_heston.cpp
     )
 target_link_libraries(vol_tests PRIVATE vol Catch2::Catch2WithMain)
 add_test(NAME vol_tests COMMAND vol_tests)
@@ -80,4 +83,6 @@ add_executable(binom_bench bench/bench_binom.cpp)
 target_link_libraries(binom_bench PRIVATE vol benchmark::benchmark Threads::Threads)
 add_executable(svi_slice_bench bench/bench_svi_slice.cpp)
 target_link_libraries(svi_slice_bench PRIVATE vol benchmark::benchmark Threads::Threads)
+add_executable(heston_bench bench/bench_heston.cpp)
+target_link_libraries(heston_bench PRIVATE vol benchmark::benchmark Threads::Threads)
 
